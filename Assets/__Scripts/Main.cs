@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class Main : MonoBehaviour {
     static public Main S;
+    static Dictionary<WeaponType, WeaponDefinition> WEAP_DICT;
+
     [Header(" Set in Inspector")]
     public GameObject[] prefabEnemies; // Array of Enemy prefabs 
     public float enemySpawnPerSecond = 0.5f; // # Enemies/second
@@ -21,6 +23,12 @@ public class Main : MonoBehaviour {
 
         // Invoke SpawnEnemy() once (in 2 seconds, based on default values) 
         Invoke("SpawnEnemy", 1f/enemySpawnPerSecond);
+
+        WEAP_DICT = new Dictionary<WeaponType, WeaponDefinition>();
+        foreach ( WeaponDefinition def in weaponDefinitions ) {
+            WEAP_DICT[def.type] = def;
+        }
+
     }
 
     public void SpawnEnemy()
@@ -59,5 +67,19 @@ public class Main : MonoBehaviour {
     {
         // Reload _Scene_0 to restart the game 
         SceneManager.LoadScene("_Scene_0");
+    }
+
+    static public WeaponDefinition GetWeaponDefinition(WeaponType wt)
+    {
+        // Check to make sure that the key exists in the 
+        // Attempting to retrieve a key that didn't exist, would throw an error, 
+        // so the following if statement is important. 
+        if (WEAP_DICT.ContainsKey(wt))
+        {
+            return ( WEAP_DICT[ wt] );
+        }
+        // This returns a new WeaponDefinition with a type of WeaponType.none, 
+        // which means it has failed to find the right WeaponDefinition 
+        return (new WeaponDefinition());
     }
 }
