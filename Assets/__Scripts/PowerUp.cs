@@ -54,5 +54,56 @@ public class PowerUp : MonoBehaviour {
 
         birthTime = Time.time; }
 
+    void Update()
+    {
+        cube.transform.rotation = Quaternion.Euler(rotPerSecond * Time.time);
+        float u = (Time.time - (birthTime + lifeTime))/fadeTime;
+        // For lifeTime seconds, u will be < = 0. Then it will transition to 
+        // 1 over the course of fadeTime seconds. 
+
+        // If u > = 1, destroy this PowerUp 
+        if (u >= 1)
+        {
+            Destroy(this.gameObject);
+            return;
+        }
+
+        // Use u to determine the alpha value of the Cube & Letter 
+        if (u > 0)
+        {
+            Color c = cubeRend.material.color;
+            c.a = 1f-u; cubeRend.material.color = c;
+            // Fade the Letter too, just not as much 
+            c = letter.color; c.a = 1f - (u* 0.5f);
+            letter.color = c;
+        }
+
+        if (! bndCheck.isOnScreen)
+        {
+            // If the PowerUp has drifted entirely off screen, destroy it 
+            Destroy( gameObject );
+        }
+    }
+
+    public void SetType(WeaponType wt)
+    {
+        // Grab the WeaponDefinition from Main
+        WeaponDefinition def = Main.GetWeaponDefinition(wt);
+
+        // Set the color of the Cube child 
+        cubeRend.material.color = def.color;
+
+        // letter.color = def.color; // We could colorize the letter too 
+        letter.text = def.letter; // Set the letter that is shown
+        type = wt; // Finally actually set the type 
+    }
+
+    public void AbsorbedBy(GameObject target)
+    {
+        // This function is called by the Hero class when a PowerUp is collected 
+        // We could tween into the target and shrink in size,
+        // but for now, just destroy this.gameObject 
+        Destroy(this.gameObject);
+    }
 
 }

@@ -40,7 +40,7 @@ public class Hero : MonoBehaviour {
            
         else
         {
-            Debug.LogError(" Hero.Awake() - Attempted to assign second Hero.S!");
+            Debug.LogError("Hero.Awake() - Attempted to assign second Hero.S!");
         }
 
       //  fireDelegate += TempFire;
@@ -105,6 +105,12 @@ public class Hero : MonoBehaviour {
             Destroy(go);
         }
 
+        else if (go.tag == "PowerUp")
+        {
+            // If the shield was triggered by a PowerUp 
+            AbsorbPowerUp(go);
+        }
+
         else
         {
             print("Triggered by non-Enemy: "+ go.name);
@@ -131,4 +137,16 @@ public class Hero : MonoBehaviour {
             }
         }
     }
+
+    public void AbsorbPowerUp(GameObject go)
+    {
+        PowerUp pu = go.GetComponent<PowerUp>(); switch (pu.type)
+        {
+            
+        }
+
+        pu.AbsorbedBy(this.gameObject);
+    }
+
+
 }
