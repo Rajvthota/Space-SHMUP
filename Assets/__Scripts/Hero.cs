@@ -13,6 +13,7 @@ public class Hero : MonoBehaviour {
     public float        gameRestartDelay = 2f;
     public GameObject   projectilePrefab;
     public float        projectileSpeed = 40;
+    public Weapon[]     weapons;
 
 
 
@@ -31,7 +32,7 @@ public class Hero : MonoBehaviour {
 
 
 
-    void Awake()
+    void Start()
     {
         if (S == null)
         {
@@ -43,7 +44,11 @@ public class Hero : MonoBehaviour {
             Debug.LogError("Hero.Awake() - Attempted to assign second Hero.S!");
         }
 
-      //  fireDelegate += TempFire;
+        //  fireDelegate += TempFire;
+        // Reset the weapons to start _Hero with 1 blaster 
+        ClearWeapons();
+        weapons[0].SetType(WeaponType.blaster);
+
     }
 
     void Update()
@@ -138,11 +143,51 @@ public class Hero : MonoBehaviour {
         }
     }
 
+    Weapon GetEmptyWeaponSlot()
+    {
+        for(int i = 0; i < weapons.Length; i++)
+        {
+            if(weapons[i].type == WeaponType.none)
+            {
+                return (weapons[i]);
+            }
+        }
+        return(null);
+    }
+
+    void ClearWeapons()
+    {
+        foreach(Weapon w in weapons)
+        {
+            w.SetType(WeaponType.none);
+        }
+    }
+
+
     public void AbsorbPowerUp(GameObject go)
     {
-        PowerUp pu = go.GetComponent<PowerUp>(); switch (pu.type)
+        PowerUp pu = go.GetComponent<PowerUp>();
+        switch (pu.type)
         {
-            
+            case WeaponType.shield:
+                shieldLevel++;
+                break;
+            default:
+                if(pu.type == weapons[0].type)
+                { // If it is the same type 
+                    Weapon w = GetEmptyWeaponSlot();
+                    if(w!=null)
+                    {
+                        // Set it to pu.type 
+                        w.SetType(pu.type);
+                    }
+                }
+                else
+                { // If this is a different weapon type 
+                    ClearWeapons();
+                    weapons[0].SetType(pu.type);
+                }
+                break;
         }
 
         pu.AbsorbedBy(this.gameObject);

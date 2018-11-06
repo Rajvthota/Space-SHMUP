@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour {
-
+        
     [Header("Set in Inspector: Enemy")]
     public float    speed = 10f;
     public float    fireRate = 0.3f;
     public float    health = 10;
     public int      score = 100; // Points earned for destroying this 
     public float    showDamageDuration = 0.1f;
+    public float    powerUpDropChance = 1f; // Chance to drop a power-up
+
 
     [Header("Set Dynamically: Enemy")]
     public Color[]      originalColors;
@@ -94,6 +96,12 @@ public class Enemy : MonoBehaviour {
                 health -= Main.GetWeaponDefinition(p.type).damageOnHit;
                 if (health <= 0)
                 {
+                    // Tell the Main singleton that this ship was destroyed 
+                    if (!notifiedOfDestruction)
+                    {
+                        Main.S.shipDestroyed(this);
+                    }
+                    notifiedOfDestruction = true;
                     // Destroy this Enemy 
                     Destroy(this.gameObject);
                 }
